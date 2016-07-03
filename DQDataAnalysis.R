@@ -16,14 +16,24 @@ ratio = 0.8
 set.seed(1)
 DQCluster["mark"] = 0
 row_counts <- dim(DQCluster)[1]
-row_selected <- sample(1:row_counts, round(row_countsvgm("Sph") * ratio))
+row_selected <- sample(1:row_counts, floor(row_counts * ratio))
 DQCluster[row_selected, "mark"] = 1
 train_data <- DQCluster[DQCluster["mark"] == 1,]
 test_data <- DQCluster[DQCluster["mark"] == 0,]
+
 crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
                                 +k=1 +x_0=500000 +y_0=0 +ellps=krass
                                 +units=m +no_defs")
 loc <- c("X", "Y")
+
+train_data_sp <- train_data
+test_data_sp <-test_data
+coordinates(train_data_sp) <- loc
+proj4string(train_data_sp) <-crs
+coordinates(test_data_sp) <- loc
+proj4string(test_data_sp) <-crs
+row_names <- c("RMSEBasedPara", "MAEBasedPara", "MEBasedPara")
+
 k <- 5
 target <- "pH"
 neighbors <- 4:20
@@ -31,6 +41,30 @@ powers <- 1:4
 
 idw_para <- idw.para(target, train_data, neighbors, powers,
                      crs, loc, k)
+
+prediction_RMSE <- idw(pH~1, train_data_sp, test_data_sp, idp = idw_para$RMSE$power,
+                      nmax =  idw_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- idw(pH~1, train_data_sp, test_data_sp, idp = idw_para$MAE$power,
+                     nmax =  idw_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- idw(pH~1, train_data_sp, test_data_sp, idp = idw_para$ME$power,
+                    nmax =  idw_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+idw_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+idw_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(idw_measure_dataframe) <- row_names
+
+
 degrees <- 1:3
 surf_para <- surf.para(target, train_data, degrees, crs, loc, k)
 
@@ -39,9 +73,21 @@ plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
 
 Sph_para <- krige.para(target, train_data, neighbors, Sph_vgm$fitted_vgm, crs, loc, k)
 
+Exp_vgm <- generate_vgm(target, train_data, "Exp", crs, loc)
+plot(Exp_vgm$vgm, Exp_vgm$fitted_vgm)
+
+Exp_para <- krige.para(target, train_data, neighbors, Exp_vgm$fitted_vgm, crs, loc, k)
+
+Cir_vgm <- generate_vgm(target, train_data, "Cir", crs, loc)
+plot(Cir_vgm$vgm, Cir_vgm$fitted_vgm)
+
+Cir_para <- krige.para(target, train_data, neighbors, Cir_vgm$fitted_vgm, crs, loc, k)
+
 idw_para_dataframe <- para_dataframe(idw_para)
 surf_para_dataframe <- para_dataframe(surf_para)
 Sph_para_dataframe <- para_dataframe(Sph_para)
+Exp_para_dataframe <- para_dataframe(Exp_para)
+Cir_para_dataframe <- para_dataframe(Cir_para)
 
 #prediction_RMSE <- 
 
