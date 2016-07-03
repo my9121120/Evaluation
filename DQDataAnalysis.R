@@ -2,16 +2,23 @@ library("gstat")
 library(sp)
 library(rgdal)
 rm(list = ls())
-a = read.csv("DQpropertyall.csv", numerals = "no.loss")
+#a = read.csv("DQpropertyall.csv", numerals = "no.loss")
+source("multicrossvalidation.R")
 load("DQData")
 properties = names(DQpropertyall)
 plot(DQpropertyall$X, DQpropertyall$Y)
 plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
 
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
-DQCluster = DQCluster[DQCluster$Y > 3383000,]
 DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
-DQFurther = DQFurther[DQCluster$Y < 3383000,]
+
+ratio = 0.8
+set.seed(1)
+DQCluster["mark"] = 0
+row_counts = dim(DQCluster)[1]
+row_selected = sample(1:row_counts, floor(row_counts * ratio))
+DQCluster[row_selected, "mark"] = 1
+
 
 coordinates(DQCluster)<-c("X", "Y")
 proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
