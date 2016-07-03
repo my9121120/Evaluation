@@ -110,7 +110,7 @@ krige.kfold <- function(target, data, neighbors, vgm,
     coordinates(validation)<-loc
     proj4string(train.data)<-crs
     proj4string(validation)<-crs
-    prediction = idw(relation, train.data, validation,
+    prediction = krige(relation, train.data, validation,
                      nmax = neighbors, model = vgm)
     measure = measures(prediction$var1.pred, as.data.frame(validation)[,target])
     len = length(accumulation)
@@ -384,6 +384,30 @@ surf.para <- function(target, data, degrees,
   return(paraset)
   
 }
+
+#' Convert list of parameters into dataframe of parameters.
+#' Constraints: Elements of the list are identical
+#' @param para: list of parameters.
+#' @return A dataframe consists parameters.
+para_dataframe <- function(para)
+{
+  len <- length(para)
+  for (i in 1:len)
+  {
+    if (i == 1)
+      para_dataframe <- as.data.frame(para[[i]])
+    else
+      para_dataframe <- rbind(para_dataframe, as.data.frame(para[[i]]))
+  }
+  rownames(para_dataframe) <- names(para)
+  return (para_dataframe)
+
+}
+
+#' Convert list of parameters into dataframe of parameters.
+#' Constraints: Elements of the list are identical
+#' @param para: list of parameters.
+#' @return A dataframe consists parameters.
 
 sampledist <- function(data, locname, bin, method = "euclidean", labels = TRUE)
 {

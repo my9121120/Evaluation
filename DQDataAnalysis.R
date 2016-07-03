@@ -15,12 +15,40 @@ DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
 ratio = 0.8
 set.seed(1)
 DQCluster["mark"] = 0
-row_counts = dim(DQCluster)[1]
-row_selected = sample(1:row_counts, floor(row_counts * ratio))
+row_counts <- dim(DQCluster)[1]
+row_selected <- sample(1:row_counts, round(row_counts * ratio))
 DQCluster[row_selected, "mark"] = 1
+train_data <- DQCluster[DQCluster["mark"] == 1,]
+test_data <- DQCluster[DQCluster["mark"] == 0,]
+crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
+                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
+                                +units=m +no_defs")
+loc <- c("X", "Y")
+k <- 5
+target <- "pH"
+neighbors <- 4:20
+powers <- 1:4
+
+idw_para <- idw.para(target, train_data, neighbors, powers,
+                     crs, loc, k)
+degrees <- 1:3
+surf_para <- surf.para(target, train_data, degrees, crs, loc, k)
+
+Sph_para <- krige.para(target, train_data, neighbors, vgm, crs, loc, k)
+
+idw_para_dataframe <- para_dataframe(idw_para)
+surf_para_dataframe <- para_dataframe(surf_para)
+
+prediction_RMSE <- 
 
 
-coordinates(DQCluster)<-c("X", "Y")
+  
+prediction = idw(relation, train.data, validation, idp = powers,
+                   nmax = neighbors)
+measure = measures(prediction$var1.pred, as.data.frame(validation)[,target])
+
+  
+  coordinates(DQCluster)<-c("X", "Y")
 proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
                                 +k=1 +x_0=500000 +y_0=0 +ellps=krass
                                 +units=m +no_defs")
