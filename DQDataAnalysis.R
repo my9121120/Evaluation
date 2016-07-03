@@ -68,20 +68,122 @@ rownames(idw_measure_dataframe) <- row_names
 degrees <- 1:3
 surf_para <- surf.para(target, train_data, degrees, crs, loc, k)
 
+prediction_RMSE <- krige(pH~1, train_data_sp, test_data_sp, 
+                         degree = surf_para$RMSE$degree)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(pH~1, train_data_sp, test_data_sp, 
+                        degree = surf_para$MAE$degree)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(pH~1, train_data_sp, test_data_sp, 
+                       degree = surf_para$ME$degree)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+surf_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+surf_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(surf_measure_dataframe) <- row_names
+
+
 Sph_vgm <- generate_vgm(target, train_data, "Sph", crs, loc)
 plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
 
 Sph_para <- krige.para(target, train_data, neighbors, Sph_vgm$fitted_vgm, crs, loc, k)
+
+prediction_RMSE <- krige(pH~1, train_data_sp, test_data_sp, 
+                         model = Sph_vgm$fitted_vgm,
+                         nmax = Sph_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(pH~1, train_data_sp, test_data_sp, 
+                        model = Sph_vgm$fitted_vgm,
+                        nmax = Sph_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(pH~1, train_data_sp, test_data_sp, 
+                       model = Sph_vgm$fitted_vgm,
+                       nmax = Sph_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Sph_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                        "MAEBasedPara" = prediction_MAE$var1.pred,
+                                        "MEBasedPara" = prediction_ME$var1.pred,
+                                        "Observation" = test_data[,target])
+
+Sph_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                                as.data.frame(measure_MAE),
+                                as.data.frame(measure_ME))
+rownames(Sph_measure_dataframe) <- row_names
+
 
 Exp_vgm <- generate_vgm(target, train_data, "Exp", crs, loc)
 plot(Exp_vgm$vgm, Exp_vgm$fitted_vgm)
 
 Exp_para <- krige.para(target, train_data, neighbors, Exp_vgm$fitted_vgm, crs, loc, k)
 
+prediction_RMSE <- krige(pH~1, train_data_sp, test_data_sp, 
+                         model = Exp_vgm$fitted_vgm,
+                         nmax = Exp_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(pH~1, train_data_sp, test_data_sp, 
+                        model = Exp_vgm$fitted_vgm,
+                        nmax = Exp_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(pH~1, train_data_sp, test_data_sp, 
+                       model = Exp_vgm$fitted_vgm,
+                       nmax = Exp_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Exp_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+Exp_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(Exp_measure_dataframe) <- row_names
+
+
+
 Cir_vgm <- generate_vgm(target, train_data, "Cir", crs, loc)
 plot(Cir_vgm$vgm, Cir_vgm$fitted_vgm)
 
 Cir_para <- krige.para(target, train_data, neighbors, Cir_vgm$fitted_vgm, crs, loc, k)
+
+prediction_RMSE <- krige(pH~1, train_data_sp, test_data_sp, 
+                         model = Cir_vgm$fitted_vgm,
+                         nmax = Cir_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(pH~1, train_data_sp, test_data_sp, 
+                        model = Cir_vgm$fitted_vgm,
+                        nmax = Cir_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(pH~1, train_data_sp, test_data_sp, 
+                       model = Cir_vgm$fitted_vgm,
+                       nmax = Cir_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Cir_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+Cir_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(Cir_measure_dataframe) <- row_names
+
 
 idw_para_dataframe <- para_dataframe(idw_para)
 surf_para_dataframe <- para_dataframe(surf_para)
@@ -89,16 +191,171 @@ Sph_para_dataframe <- para_dataframe(Sph_para)
 Exp_para_dataframe <- para_dataframe(Exp_para)
 Cir_para_dataframe <- para_dataframe(Cir_para)
 
-#prediction_RMSE <- 
+###################################################################################
+#Predicting OM.g.kg.1. with various interpolation methods
+target <- "OM.g.kg.1."
+idw_para <- idw.para(target, train_data, neighbors, powers,
+                     crs, loc, k)
+
+prediction_RMSE <- idw(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                       idp = idw_para$RMSE$power,
+                       nmax =  idw_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- idw(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                      idp = idw_para$MAE$power,
+                      nmax =  idw_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- idw(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                     idp = idw_para$ME$power,
+                     nmax =  idw_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+idw_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+idw_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(idw_measure_dataframe) <- row_names
+
+
+degrees <- 1:3
+surf_para <- surf.para(target, train_data, degrees, crs, loc, k)
+
+prediction_RMSE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                         degree = surf_para$RMSE$degree)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                        degree = surf_para$MAE$degree)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                       degree = surf_para$ME$degree)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+surf_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                        "MAEBasedPara" = prediction_MAE$var1.pred,
+                                        "MEBasedPara" = prediction_ME$var1.pred,
+                                        "Observation" = test_data[,target])
+
+surf_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                                as.data.frame(measure_MAE),
+                                as.data.frame(measure_ME))
+rownames(surf_measure_dataframe) <- row_names
+
+
+Sph_vgm <- generate_vgm(target, train_data, "Sph", crs, loc)
+plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
+
+Sph_para <- krige.para(target, train_data, neighbors, Sph_vgm$fitted_vgm, crs, loc, k)
+
+prediction_RMSE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                         model = Sph_vgm$fitted_vgm,
+                         nmax = Sph_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                        model = Sph_vgm$fitted_vgm,
+                        nmax = Sph_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                       model = Sph_vgm$fitted_vgm,
+                       nmax = Sph_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Sph_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+Sph_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(Sph_measure_dataframe) <- row_names
+
+
+Exp_vgm <- generate_vgm(target, train_data, "Exp", crs, loc)
+plot(Exp_vgm$vgm, Exp_vgm$fitted_vgm)
+
+Exp_para <- krige.para(target, train_data, neighbors, Exp_vgm$fitted_vgm, crs, loc, k)
+
+prediction_RMSE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                         model = Exp_vgm$fitted_vgm,
+                         nmax = Exp_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                        model = Exp_vgm$fitted_vgm,
+                        nmax = Exp_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                       model = Exp_vgm$fitted_vgm,
+                       nmax = Exp_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Exp_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+Exp_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(Exp_measure_dataframe) <- row_names
+
+
+
+Cir_vgm <- generate_vgm(target, train_data, "Cir", crs, loc)
+plot(Cir_vgm$vgm, Cir_vgm$fitted_vgm)
+
+Cir_para <- krige.para(target, train_data, neighbors, Cir_vgm$fitted_vgm, crs, loc, k)
+
+prediction_RMSE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                         model = Cir_vgm$fitted_vgm,
+                         nmax = Cir_para$RMSE$neighbor)
+measure_RMSE <- measures(prediction_RMSE$var1.pred, test_data[,target])
+
+prediction_MAE <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                        model = Cir_vgm$fitted_vgm,
+                        nmax = Cir_para$MAE$neighbor)
+measure_MAE <- measures(prediction_MAE$var1.pred, test_data[,target])
+
+prediction_ME <- krige(OM.g.kg.1.~1, train_data_sp, test_data_sp, 
+                       model = Cir_vgm$fitted_vgm,
+                       nmax = Cir_para$ME$neighbor)
+measure_ME <- measures(prediction_ME$var1.pred, test_data[,target])
+
+Cir_prediction_dataframe <- data.frame("RMSEBasedPara" = prediction_RMSE$var1.pred,
+                                       "MAEBasedPara" = prediction_MAE$var1.pred,
+                                       "MEBasedPara" = prediction_ME$var1.pred,
+                                       "Observation" = test_data[,target])
+
+Cir_measure_dataframe <- rbind(as.data.frame(measure_RMSE),
+                               as.data.frame(measure_MAE),
+                               as.data.frame(measure_ME))
+rownames(Cir_measure_dataframe) <- row_names
+
+
+idw_para_dataframe <- para_dataframe(idw_para)
+surf_para_dataframe <- para_dataframe(surf_para)
+Sph_para_dataframe <- para_dataframe(Sph_para)
+Exp_para_dataframe <- para_dataframe(Exp_para)
+Cir_para_dataframe <- para_dataframe(Cir_para)
+
 
 
   
-prediction = idw(relation, train.data, validation, idp = powers,
-                   nmax = neighbors)
-measure = measures(prediction$var1.pred, as.data.frame(validation)[,target])
+
 
   
-  coordinates(DQCluster)<-c("X", "Y")
+coordinates(DQCluster)<-c("X", "Y")
 proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
                                 +k=1 +x_0=500000 +y_0=0 +ellps=krass
                                 +units=m +no_defs")

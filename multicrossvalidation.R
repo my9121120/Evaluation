@@ -409,7 +409,7 @@ para_dataframe <- function(para)
 #' @param data: spatialdataframe including target
 #' @param model: string represents model of variogram.
 #' 
-#' @return A list contains xperimental variogram and fitted variogram.
+#' @return A list contains experimental variogram and fitted variogram.
 #' 
 generate_vgm <- function(target, data, name, crs, loc)
 {
