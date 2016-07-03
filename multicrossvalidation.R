@@ -404,10 +404,23 @@ para_dataframe <- function(para)
 
 }
 
-#' Convert list of parameters into dataframe of parameters.
-#' Constraints: Elements of the list are identical
-#' @param para: list of parameters.
-#' @return A dataframe consists parameters.
+#' generate a list containg experimental variogram and fitted variogram.
+#' @param target: string defining the response vector.
+#' @param data: spatialdataframe including target
+#' @param model: string represents model of variogram.
+#' 
+#' @return A list contains xperimental variogram and fitted variogram.
+#' 
+generate_vgm <- function(target, data, name, crs, loc)
+{
+  relation <- as.formula(paste(target, '~', '1'))
+  coordinates(data) <- loc
+  proj4string(data) <- crs
+  vgm <- variogram(relation, data)
+  fitted_vgm <- fit.variogram(vgm, vgm(name))
+  model <- list("vgm" = vgm, "fitted_vgm" = fitted_vgm)
+  return (model)
+}
 
 sampledist <- function(data, locname, bin, method = "euclidean", labels = TRUE)
 {

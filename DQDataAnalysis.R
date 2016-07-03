@@ -16,7 +16,7 @@ ratio = 0.8
 set.seed(1)
 DQCluster["mark"] = 0
 row_counts <- dim(DQCluster)[1]
-row_selected <- sample(1:row_counts, round(row_counts * ratio))
+row_selected <- sample(1:row_counts, round(row_countsvgm("Sph") * ratio))
 DQCluster[row_selected, "mark"] = 1
 train_data <- DQCluster[DQCluster["mark"] == 1,]
 test_data <- DQCluster[DQCluster["mark"] == 0,]
@@ -34,12 +34,16 @@ idw_para <- idw.para(target, train_data, neighbors, powers,
 degrees <- 1:3
 surf_para <- surf.para(target, train_data, degrees, crs, loc, k)
 
-Sph_para <- krige.para(target, train_data, neighbors, vgm, crs, loc, k)
+Sph_vgm <- generate_vgm(target, train_data, "Sph", crs, loc)
+plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
+
+Sph_para <- krige.para(target, train_data, neighbors, Sph_vgm$fitted_vgm, crs, loc, k)
 
 idw_para_dataframe <- para_dataframe(idw_para)
 surf_para_dataframe <- para_dataframe(surf_para)
+Sph_para_dataframe <- para_dataframe(Sph_para)
 
-prediction_RMSE <- 
+#prediction_RMSE <- 
 
 
   
