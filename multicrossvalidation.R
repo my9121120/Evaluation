@@ -422,6 +422,61 @@ generate_vgm <- function(target, data, name, crs, loc)
   return (model)
 }
 
+#' generate a list containg experimental variogram and fitted variogram.
+#' @param source_list: composed of dataframes of measures.
+#' @param rownames: dataframe row names of elements of list
+
+#' 
+#' @return A list contains dataframes composed of measures of various interpolation.
+#' 
+dataframe_list_convertion <- function(source_list, rownames)
+{
+  result <- list()
+  if (check_list(source_list))
+  {
+    len <- length(source_list)
+    rowcounts <- dim(source_list[[1]])[1]
+    for (i in 1:rowcounts)
+    {
+      temp_dataframe <- data.frame()
+      for (j in 1:len)
+      {
+        temp_dataframe <- rbind(temp_dataframe, source_list[[j]][i,])
+      }
+      rownames(temp_dataframe) <- rownames
+      result[[i]] <- temp_dataframe
+      
+    }
+    return (result)
+    
+  }
+  else
+    return (NULL)
+
+}
+
+#' Check if the dimensions of elements of source_list are identical and if source_list
+#' include element.
+#' @param source_list: composed of dataframes of measures.
+#' 
+#' @return Boolean value.
+#'
+check_list <- function(source_list)
+{
+  len <- length(source_list)
+  if (len <= 0)
+    return (FALSE)
+  else
+  {
+    dim_dataframe <- dim(source_list[[1]])
+    for (i in 2:len)
+    {
+      if (sum(dim_dataframe == source_list[[i]]) != 2)
+        return (FALSE)
+    }
+    return (TRUE)
+  }
+}
 sampledist <- function(data, locname, bin, method = "euclidean", labels = TRUE)
 {
   location = as.matrix(data[,locname])

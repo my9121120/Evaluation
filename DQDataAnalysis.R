@@ -190,7 +190,13 @@ surf_para_dataframe <- para_dataframe(surf_para)
 Sph_para_dataframe <- para_dataframe(Sph_para)
 Exp_para_dataframe <- para_dataframe(Exp_para)
 Cir_para_dataframe <- para_dataframe(Cir_para)
-
+dataframe_list_convertion(list(idw_measure_dataframe,
+                               surf_measure_dataframe,
+                               Sph_measure_dataframe,
+                               Exp_measure_dataframe,
+                               Cir_measure_dataframe),
+                               c("idw", "surf", "Sph",
+                                 "Exp", "Cir"))
 ###################################################################################
 #Predicting OM.g.kg.1. with various interpolation methods
 target <- "OM.g.kg.1."
