@@ -441,9 +441,14 @@ dataframe_list_convertion <- function(source_list, rownames)
       temp_dataframe <- data.frame()
       for (j in 1:len)
       {
-        temp_dataframe <- rbind(temp_dataframe, source_list[[j]][i,])
+        cur_row <- source_list[[j]][i,]
+        # if (j > 1)
+        #   names(cur_row) <- substring(rownames(cur_row), 1,
+        #                               nchar(rownames(cur_row)))
+        temp_dataframe <- rbind(temp_dataframe, cur_row)
       }
-      rownames(temp_dataframe) <- rownames
+      row_names <- cons_names(temp_dataframe, rownames)
+      rownames(temp_dataframe) <- row_names
       result[[i]] <- temp_dataframe
       
     }
@@ -471,12 +476,55 @@ check_list <- function(source_list)
     dim_dataframe <- dim(source_list[[1]])
     for (i in 2:len)
     {
-      if (sum(dim_dataframe == source_list[[i]]) != 2)
+      dim_i = dim(source_list[[i]])
+      if (sum(dim_dataframe == dim_i) != 2)
         return (FALSE)
     }
     return (TRUE)
   }
 }
+
+#' construct rownames of a dataframe 
+#' @param dataframe: a dataframe of measures.
+#' @param names: prefix of names of dataframe.
+#' 
+#' @return array of names.
+#'
+cons_names <- function(dataframe, names)
+{
+  len <- length(names)
+  if (len != dim(dataframe)[1])
+    return (NULL)
+  row_names <- rownames(dataframe)
+  for (i in 2:len)
+  {
+    row_names[i] <- substring(row_names[i], 1, nchar(row_names[i]) - 1)
+  }
+  return (paste(names, row_names))
+  
+}
+
+#' construct rownames of a dataframe 
+#' @param dataframe: a dataframe of measures.
+#' @param names: prefix of names of dataframe.
+#' 
+#' @return array of names.
+#'
+measure_barplot <- function(dataframe_list)
+{
+  row_counts <- length(dataframe_list)
+  for (i in 1:row_counts)
+  {
+    bplt <- barplot(as.matrix(dataframe_list[[i]]), col = 1:5, beside = TRUE)
+    legend("topright", legend = rownames(as.matrix(a[[i]])),
+           fill = 1:5, ncol = 1, cex = 0.75)
+    
+    text(x= bplt, y= as.matrix(dataframe_list[[i]]) + 0.03,
+         labels=as.character(round(as.matrix(dataframe_list[[i]]), 2))
+         , xpd=TRUE, cex = 0.75)  
+  }
+}
+
 sampledist <- function(data, locname, bin, method = "euclidean", labels = TRUE)
 {
   location = as.matrix(data[,locname])
