@@ -447,7 +447,8 @@ dataframe_list_convertion <- function(source_list, rownames)
         #                               nchar(rownames(cur_row)))
         temp_dataframe <- rbind(temp_dataframe, cur_row)
       }
-      row_names <- cons_names(temp_dataframe, rownames)
+      #row_names <- cons_names(temp_dataframe, rownames)
+      row_names <- rownames
       rownames(temp_dataframe) <- row_names
       result[[i]] <- temp_dataframe
       
@@ -504,22 +505,23 @@ cons_names <- function(dataframe, names)
   
 }
 
-#' construct rownames of a dataframe 
-#' @param dataframe: a dataframe of measures.
-#' @param names: prefix of names of dataframe.
-#' 
-#' @return array of names.
+#' barplot for dataframe elements of a list 
+#' @param dataframe_list: a list of dataframes.
 #'
-measure_barplot <- function(dataframe_list)
+measure_barplot <- function(dataframe_list, titles)
 {
-  row_counts <- length(dataframe_list)
-  for (i in 1:row_counts)
+  element_counts <- length(dataframe_list)
+  rows <- dim(dataframe_list[[1]])[1]
+  for (i in 1:element_counts)
   {
-    bplt <- barplot(as.matrix(dataframe_list[[i]]), col = 1:5, beside = TRUE)
-    legend("topright", legend = rownames(as.matrix(a[[i]])),
-           fill = 1:5, ncol = 1, cex = 0.75)
-    
-    text(x= bplt, y= as.matrix(dataframe_list[[i]]) + 0.03,
+    measures_matrix <- as.matrix(dataframe_list[[i]])
+    peak <- max(measures_matrix)
+    bplt <- barplot(measures_matrix, col = 1:rows, 
+                    main = titles[[i]], beside = TRUE)
+    legend("topright", legend = rownames(measures_matrix),
+           fill = 1:rows, ncol = 2, cex = 0.75)
+    ypos <- apply(measures_matrix, 1:2, function(x) if (x>0) x + 0.1*peak else x - 0.1*peak)
+    text(x= bplt, y= ypos,
          labels=as.character(round(as.matrix(dataframe_list[[i]]), 2))
          , xpd=TRUE, cex = 0.75)  
   }

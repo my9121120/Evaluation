@@ -198,7 +198,9 @@ measures_frame = dataframe_list_convertion(list(idw_measure_dataframe,
                                Cir_measure_dataframe),
                                c("idw", "surf", "Sph",
                                  "Exp", "Cir"))
-measure_barplot(measures_frame)
+titles <- c("RMSE", "MAE", "ME")
+titles <- paste(titles, "minmized based parameters selection")
+measure_barplot(measures_frame, titles)
 
 
 ###################################################################################
@@ -359,7 +361,16 @@ Sph_para_dataframe <- para_dataframe(Sph_para)
 Exp_para_dataframe <- para_dataframe(Exp_para)
 Cir_para_dataframe <- para_dataframe(Cir_para)
 
-
+measures_frame = dataframe_list_convertion(list(idw_measure_dataframe,
+                                                surf_measure_dataframe,
+                                                Sph_measure_dataframe,
+                                                Exp_measure_dataframe,
+                                                Cir_measure_dataframe),
+                                           c("idw", "surf", "Sph",
+                                             "Exp", "Cir"))
+titles <- c("RMSE", "MAE", "ME")
+titles <- paste(titles, "minmized based parameters selection")
+measure_barplot(measures_frame, titles)
 
   
 
