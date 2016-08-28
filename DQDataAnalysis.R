@@ -1,6 +1,9 @@
 library("gstat")
 library(sp)
 library(rgdal)
+library(ggplot2)
+library(ggmap)
+library(maps)
 rm(list = ls())
 #a = read.csv("DQpropertyall.csv", numerals = "no.loss")
 source("multicrossvalidation.R")
@@ -11,6 +14,22 @@ plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
 
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
 DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
+
+coordinates(DQCluster)<-c("X", "Y")
+proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
+                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
+                                +units=m +no_defs")
+longlat <- CRS("+proj=longlat +ellps=WGS84")
+DQCluster_GPS <- spTransform(DQCluster, longlat)
+sample_boundary <- bbox(DQCluster_GPS)
+# map <- get_map(c(sample_boundary[1, 1], sample_boundary[2, 1],
+#                  sample_boundary[1, 2], sample_boundary[2, 2]),
+#                source = "osm", zoom = 3)
+map <- get_map(c(as.data.frame(DQCluster_GPS)[1,"X"], as.data.frame(DQCluster_GPS)[1, "Y"]),
+               source = "osm", zoom = 18)
+ggmap(map, extent = "device")+
+  geom_point(aes(x = X, y = Y), data = as.data.frame(DQCluster_GPS))
+
 
 ratio = 0.8
 set.seed(1)
@@ -380,6 +399,18 @@ coordinates(DQCluster)<-c("X", "Y")
 proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
                                 +k=1 +x_0=500000 +y_0=0 +ellps=krass
                                 +units=m +no_defs")
+longlat <- CRS("+proj=longlat +ellps=WGS84")
+DQCluster_GPS <- spTransform(DQCluster, longlat)
+sample_boundary <- bbox(DQCluster_GPS)
+# map <- get_map(c(sample_boundary[1, 1], sample_boundary[2, 1],
+#                  sample_boundary[1, 2], sample_boundary[2, 2]),
+#                source = "osm", zoom = 3)
+map <- get_map(c((sample_boundary[1, 1] + sample_boundary[1, 2])/2, 
+                 (sample_boundary[2, 1] + sample_boundary[2, 2])/2),
+               source = "osm", zoom = 18)
+ggmap(map, extent = "device")+
+  geom_point(aes(x = X, y = Y), data = as.data.frame(DQCluster_GPS))
+  
 hscat(DQCluster$pH~1, DQCluster, breaks = (0:9)*10)
 vgm = variogram(DQCluster$pH~1, DQCluster)
 fittingvgm = fit.variogram(vgm, vgm("Sph"))
@@ -401,23 +432,6 @@ maxdist = max(distance)
 mindist = min(distance)
 
 
-
-
-coordinates(DQpropertyall)<-c("X", "Y")
-spplot(DQpropertyall,"pH", cex = 1)
-
-
-#The coordinate system might be EPSG:2412 
-#Beijing 1954 / 3-degree Gauss-Kruger zone 36
-proj4string(DQpropertyall)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
-                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
-                                +units=m +no_defs")
-
-longlat = CRS("+proj=longlat +ellps=WGS84")
-DQpropertyall = spTransform(DQpropertyall, longlat)
-DQpropertyall = as.data.frame(DQpropertyall)
-loc = DQpropertyall[,c("X", "Y")]
-plot(loc$X, loc$Y, cex = 0.5)
 
 
 hist(DQpropertyall$pH)
