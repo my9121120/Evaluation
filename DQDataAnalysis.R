@@ -15,20 +15,6 @@ plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
 DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
 
-coordinates(DQCluster)<-c("X", "Y")
-proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
-                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
-                                +units=m +no_defs")
-longlat <- CRS("+proj=longlat +ellps=WGS84")
-DQCluster_GPS <- spTransform(DQCluster, longlat)
-sample_boundary <- bbox(DQCluster_GPS)
-# map <- get_map(c(sample_boundary[1, 1], sample_boundary[2, 1],
-#                  sample_boundary[1, 2], sample_boundary[2, 2]),
-#                source = "osm", zoom = 3)
-map <- get_map(c(as.data.frame(DQCluster_GPS)[1,"X"], as.data.frame(DQCluster_GPS)[1, "Y"]),
-               source = "osm", zoom = 18)
-ggmap(map, extent = "device")+
-  geom_point(aes(x = X, y = Y), data = as.data.frame(DQCluster_GPS))
 
 
 ratio = 0.8
