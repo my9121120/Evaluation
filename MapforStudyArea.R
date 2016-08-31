@@ -15,8 +15,10 @@ proj4string(DQCluster)<-CRS("+proj=tmerc +lat_0=0 +lon_0=120
                                 +units=m +no_defs")
 longlat <- CRS("+proj=longlat +ellps=WGS84")
 DQCluster_GPS <- spTransform(DQCluster, longlat)
+box <- bbox(DQCluster_GPS)
 
 DQCluster_GPS <- as.data.frame(DQCluster_GPS)
+
 lon = mean(DQCluster_GPS[,"X"])
 lat = mean(DQCluster_GPS[,"Y"])
 map <- get_googlemap('Shanxi', zoom = 4, markers = data.frame(longitude=lon, latitude=lat)

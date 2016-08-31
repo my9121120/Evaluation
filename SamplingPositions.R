@@ -14,6 +14,10 @@ xmax <- max(DQCluster$X)
 ymin <- min(DQCluster$Y)
 ymax <- max(DQCluster$Y)
 
+length <- xmax - xmin
+width <- ymax - ymin
+area <- length * width
+
 x <- seq(xmin, xmax, by = 2)
 y <- seq(ymin, ymax, by = 2)
 
