@@ -6,6 +6,7 @@ library(ggmap)
 library(maps)
 library(e1071)
 library(stats)
+library(graphics)
 rm(list = ls())
 #a = read.csv("DQpropertyall.csv", numerals = "no.loss")
 source("multicrossvalidation.R")
@@ -425,18 +426,27 @@ sd_pH <- sd(DQpropertyall$pH)
 skew_pH <- skewness(DQpropertyall$pH)
 kurt_pH <- kurtosis(DQpropertyall$pH)
 
-sd_SOM <- skewness(DQpropertyall$OM.g.kg.1.)
+sd_SOM <- sd(DQpropertyall$OM.g.kg.1.)
 skew_SOM <- skewness(DQpropertyall$OM.g.kg.1.)
-kurt_SOM <- skewness(DQpropertyall$OM.g.kg.1.)
-stat_data <- data.frame("pH"=c(sd_pH,skew_pH,kurt_pH),
-                        "SOM"=c(sd_SOM,skew_SOM,kurt_SOM))
+kurt_SOM <- kurtosis(DQpropertyall$OM.g.kg.1.)
+stat_data <- data.frame("pH"=round(c(sd_pH,skew_pH,kurt_pH),digits = 2),
+                        "SOM"=round(c(sd_SOM,skew_SOM,kurt_SOM),digits = 2))
 rownames(stat_data) <- c("sd", "skew", "kurt")
-stat_data["sd_pH",] = as.data.frame(c(sd_pH, sd_SOM))
+
+plot(DQpropertyall$pH, ylim=c(4,10))
+plot(DQpropertyall$OM.g.kg.1., ylim=c(9,40))
 
 par(mfrow = c(1,2))
-hist(DQpropertyall$pH, freq = FALSE)
-lines(density(DQpropertyall$pH, adjust = 2))
-hist(DQpropertyall$OM.g.kg.1., prob = TRUE)
-hist(DQpropertyall$silt.)
-hist(DQpropertyall$clay.)
-hist(DQpropertyall$sand.)
+pH <- DQpropertyall$pH
+mean_pH <- mean(pH)
+hist(pH, xlab = "pH", ylab = "Density", freq = FALSE,
+     main = "(a)", font.main = 1)
+curve(dnorm(x, mean = mean_pH, sd = sd_pH), 
+      add = TRUE, col = "darkblue")
+
+#lines(density(DQpropertyall$pH, adjust = 2))
+OM <- DQpropertyall$OM.g.kg.1.
+hist(OM, xlab = "OM (g/kg)", ylab = "Density", 
+     freq = FALSE, main = "(b)", font.main = 1)
+curve(dnorm(x, mean = mean(OM), sd = sd_SOM), 
+      add = TRUE, col = "darkblue")
