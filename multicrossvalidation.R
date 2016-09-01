@@ -534,3 +534,4 @@ sampledist <- function(data, locname, bin, method = "euclidean", labels = TRUE)
   hist(distance, breaks = bin, labels = labels)
   return(distance)
 }
+

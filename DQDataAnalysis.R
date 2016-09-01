@@ -7,6 +7,7 @@ library(maps)
 library(e1071)
 library(stats)
 library(graphics)
+library(lattice)
 rm(list = ls())
 #a = read.csv("DQpropertyall.csv", numerals = "no.loss")
 source("multicrossvalidation.R")
@@ -17,6 +18,43 @@ plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
 
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
 DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
+
+crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
+                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
+                                +units=m +no_defs")
+loc <- c("X", "Y")
+target <- "pH"
+
+Cir_vgm <- generate_vgm(target, DQCluster, "Cir", crs, loc)
+Sph_vgm <- generate_vgm(target, DQCluster, "Sph", crs, loc)
+Exp_vgm <- generate_vgm(target, DQCluster, "Exp", crs, loc)
+
+target <- "OM.g.kg.1."
+
+Cir_vgm_OM <- generate_vgm(target, DQCluster, "Cir", crs, loc)
+Sph_vgm_OM <- generate_vgm(target, DQCluster, "Sph", crs, loc)
+Exp_vgm_OM <- generate_vgm(target, DQCluster, "Exp", crs, loc)
+
+maxdist <- round(max(Cir_vgm$vgm$dist),0)
+mypanel = function(x,y,...) {                                                 
+  vgm.panel.xyplot(x,y,...)
+  panel.lines(variogramLine(Sph_vgm$fitted_vgm,maxdist),lty = 2, col ="green")
+  panel.lines(variogramLine(Exp_vgm$fitted_vgm,maxdist),lty = 3, col = "red")
+}
+print(plot(Cir_vgm$vgm, model=Cir_vgm$fitted_vgm, panel=mypanel))
+
+maxdist <- round(max(Cir_vgm_OM$vgm$dist),0)
+mypanel = function(x,y,...) {                                                 
+  vgm.panel.xyplot(x,y,...)
+  panel.lines(variogramLine(Sph_vgm_OM$fitted_vgm,maxdist),lty = 2, col ="green")
+  panel.lines(variogramLine(Exp_vgm_OM$fitted_vgm,maxdist),lty = 3, col = "red")
+}
+print(plot(Cir_vgm_OM$vgm, model=Cir_vgm_OM$fitted_vgm, panel=mypanel))
+
+# plot(Cir_vgm_OM$vgm, Cir_vgm_OM$fitted_vgm)
+# plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
+# plot(Exp_vgm$vgm, Exp_vgm$fitted_vgm)
+
 
 
 
@@ -29,10 +67,7 @@ DQCluster[row_selected, "mark"] = 1
 train_data <- DQCluster[DQCluster["mark"] == 1,]
 test_data <- DQCluster[DQCluster["mark"] == 0,]
 
-crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
-                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
-                                +units=m +no_defs")
-loc <- c("X", "Y")
+
 
 train_data_sp <- train_data
 test_data_sp <-test_data
@@ -421,23 +456,23 @@ maxdist = max(distance)
 mindist = min(distance)
 
 
-statistics <- summary(DQpropertyall[, c("pH", "OM.g.kg.1.")])
-sd_pH <- sd(DQpropertyall$pH)
-skew_pH <- skewness(DQpropertyall$pH)
-kurt_pH <- kurtosis(DQpropertyall$pH)
+statistics <- summary(DQCluster[, c("pH", "OM.g.kg.1.")])
+sd_pH <- sd(DQCluster$pH)
+skew_pH <- skewness(DQCluster$pH)
+kurt_pH <- kurtosis(DQCluster$pH)
 
-sd_SOM <- sd(DQpropertyall$OM.g.kg.1.)
-skew_SOM <- skewness(DQpropertyall$OM.g.kg.1.)
-kurt_SOM <- kurtosis(DQpropertyall$OM.g.kg.1.)
+sd_SOM <- sd(DQCluster$OM.g.kg.1.)
+skew_SOM <- skewness(DQCluster$OM.g.kg.1.)
+kurt_SOM <- kurtosis(DQCluster$OM.g.kg.1.)
 stat_data <- data.frame("pH"=round(c(sd_pH,skew_pH,kurt_pH),digits = 2),
                         "SOM"=round(c(sd_SOM,skew_SOM,kurt_SOM),digits = 2))
 rownames(stat_data) <- c("sd", "skew", "kurt")
 
-plot(DQpropertyall$pH, ylim=c(4,10))
-plot(DQpropertyall$OM.g.kg.1., ylim=c(9,40))
+plot(DQCluster$pH, ylim=c(4,10))
+plot(DQCluster$OM.g.kg.1., ylim=c(9,40))
 
 par(mfrow = c(1,2))
-pH <- DQpropertyall$pH
+pH <- DQCluster$pH
 mean_pH <- mean(pH)
 hist(pH, xlab = "pH", ylab = "Density", freq = FALSE,
      main = "(a)", font.main = 1)
@@ -445,7 +480,7 @@ curve(dnorm(x, mean = mean_pH, sd = sd_pH),
       add = TRUE, col = "darkblue")
 
 #lines(density(DQpropertyall$pH, adjust = 2))
-OM <- DQpropertyall$OM.g.kg.1.
+OM <- DQCluster$OM.g.kg.1.
 hist(OM, xlab = "OM (g/kg)", ylab = "Density", 
      freq = FALSE, main = "(b)", font.main = 1)
 curve(dnorm(x, mean = mean(OM), sd = sd_SOM), 
