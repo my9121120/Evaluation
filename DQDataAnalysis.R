@@ -25,15 +25,15 @@ crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
 loc <- c("X", "Y")
 target <- "pH"
 
-Cir_vgm <- generate_vgm(target, DQCluster, "Cir", crs, loc)
-Sph_vgm <- generate_vgm(target, DQCluster, "Sph", crs, loc)
-Exp_vgm <- generate_vgm(target, DQCluster, "Exp", crs, loc)
+Cir_vgm <- generate_vgm(target, DQCluster, "Cir", crs, loc, 0.5)
+Sph_vgm <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
+Exp_vgm <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
 
 target <- "OM.g.kg.1."
 
-Cir_vgm_OM <- generate_vgm(target, DQCluster, "Cir", crs, loc)
-Sph_vgm_OM <- generate_vgm(target, DQCluster, "Sph", crs, loc)
-Exp_vgm_OM <- generate_vgm(target, DQCluster, "Exp", crs, loc)
+Cir_vgm_OM <- generate_vgm(target, DQCluster, "Cir", crs, loc, 0.5)
+Sph_vgm_OM <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
+Exp_vgm_OM <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
 
 maxdist <- round(max(Cir_vgm$vgm$dist),0)
 mypanel = function(x,y,...) {                                                 
@@ -49,7 +49,8 @@ mypanel = function(x,y,...) {
   panel.lines(variogramLine(Sph_vgm_OM$fitted_vgm,maxdist),lty = 2, col ="green")
   panel.lines(variogramLine(Exp_vgm_OM$fitted_vgm,maxdist),lty = 3, col = "red")
 }
-print(plot(Cir_vgm_OM$vgm, model=Cir_vgm_OM$fitted_vgm, panel=mypanel))
+print(plot(Cir_vgm_OM$vgm, model=Cir_vgm_OM$fitted_vgm,
+           col = "black", panel=mypanel))
 
 # plot(Cir_vgm_OM$vgm, Cir_vgm_OM$fitted_vgm)
 # plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
@@ -456,32 +457,3 @@ maxdist = max(distance)
 mindist = min(distance)
 
 
-statistics <- summary(DQCluster[, c("pH", "OM.g.kg.1.")])
-sd_pH <- sd(DQCluster$pH)
-skew_pH <- skewness(DQCluster$pH)
-kurt_pH <- kurtosis(DQCluster$pH)
-
-sd_SOM <- sd(DQCluster$OM.g.kg.1.)
-skew_SOM <- skewness(DQCluster$OM.g.kg.1.)
-kurt_SOM <- kurtosis(DQCluster$OM.g.kg.1.)
-stat_data <- data.frame("pH"=round(c(sd_pH,skew_pH,kurt_pH),digits = 2),
-                        "SOM"=round(c(sd_SOM,skew_SOM,kurt_SOM),digits = 2))
-rownames(stat_data) <- c("sd", "skew", "kurt")
-
-plot(DQCluster$pH, ylim=c(4,10))
-plot(DQCluster$OM.g.kg.1., ylim=c(9,40))
-
-par(mfrow = c(1,2))
-pH <- DQCluster$pH
-mean_pH <- mean(pH)
-hist(pH, xlab = "pH", ylab = "Density", freq = FALSE,
-     main = "(a)", font.main = 1)
-curve(dnorm(x, mean = mean_pH, sd = sd_pH), 
-      add = TRUE, col = "darkblue")
-
-#lines(density(DQpropertyall$pH, adjust = 2))
-OM <- DQCluster$OM.g.kg.1.
-hist(OM, xlab = "OM (g/kg)", ylab = "Density", 
-     freq = FALSE, main = "(b)", font.main = 1)
-curve(dnorm(x, mean = mean(OM), sd = sd_SOM), 
-      add = TRUE, col = "darkblue")

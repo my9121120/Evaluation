@@ -411,12 +411,14 @@ para_dataframe <- function(para)
 #' 
 #' @return A list contains experimental variogram and fitted variogram.
 #' 
-generate_vgm <- function(target, data, name, crs, loc)
+generate_vgm <- function(target, data, name, crs, loc, ratio)
 {
   relation <- as.formula(paste(target, '~', '1'))
   coordinates(data) <- loc
   proj4string(data) <- crs
-  vgm <- variogram(relation, data)
+  vertexes <- bbox(data)
+  diagonal <- max(dist(t(as.matrix(vertexes))))
+  vgm <- variogram(relation, data, cutoff = diagonal * ratio)
   fitted_vgm <- fit.variogram(vgm, vgm(name))
   model <- list("vgm" = vgm, "fitted_vgm" = fitted_vgm)
   return (model)
