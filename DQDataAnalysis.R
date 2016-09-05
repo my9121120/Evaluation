@@ -19,56 +19,7 @@ plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
 DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
 
-DQCluster[, "lnOM"] = log(DQCluster$OM.g.kg.1.)
-crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
-                                +k=1 +x_0=500000 +y_0=0 +ellps=krass
-                                +units=m +no_defs")
-loc <- c("X", "Y")
-target <- "pH"
 
-Cir_vgm <- generate_vgm(target, DQCluster, "Cir", crs, loc, 0.5)
-Sph_vgm <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
-Exp_vgm <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
-
-target <- "OM.g.kg.1."
-
-Cir_vgm_OM <- generate_vgm(target, DQCluster, "Cir", crs, loc, 0.5)
-Sph_vgm_OM <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
-Exp_vgm_OM <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
-
-target <- "lnOM"
-
-Cir_vgm_lnOM <- generate_vgm(target, DQCluster, "Cir", crs, loc, 0.5)
-Sph_vgm_lnOM <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
-Exp_vgm_lnOM <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
-
-par(mfrow(1,3))
-
-maxdist <- round(max(Cir_vgm$vgm$dist),0)
-mypanel = function(x,y,...) {                                                 
-  vgm.panel.xyplot(x,y,...)
-  panel.lines(variogramLine(Sph_vgm$fitted_vgm,maxdist),lty = 2, col ="green")
-  panel.lines(variogramLine(Exp_vgm$fitted_vgm,maxdist),lty = 3, col = "red")
-}
-plot(Cir_vgm$vgm, model=Cir_vgm$fitted_vgm, panel=mypanel)
-
-maxdist <- round(max(Cir_vgm_OM$vgm$dist),0)
-mypanel = function(x,y,...) {                                                 
-  vgm.panel.xyplot(x,y,...)
-  panel.lines(variogramLine(Sph_vgm_OM$fitted_vgm,maxdist),lty = 2, col ="green")
-  panel.lines(variogramLine(Exp_vgm_OM$fitted_vgm,maxdist),lty = 3, col = "red")
-}
-print(plot(Cir_vgm_OM$vgm, model=Cir_vgm_OM$fitted_vgm,
-           col = "black", panel=mypanel))
-
-maxdist <- round(max(Cir_vgm_lnOM$vgm$dist),0)
-mypanel = function(x,y,...) {                                                 
-  vgm.panel.xyplot(x,y,...)
-  panel.lines(variogramLine(Sph_vgm_lnOM$fitted_vgm,maxdist),lty = 2, col ="green")
-  panel.lines(variogramLine(Exp_vgm_lnOM$fitted_vgm,maxdist),lty = 3, col = "red")
-}
-print(plot(Cir_vgm_lnOM$vgm, model=Cir_vgm_lnOM$fitted_vgm,
-           col = "black", panel=mypanel))
 
 # plot(Cir_vgm_OM$vgm, Cir_vgm_OM$fitted_vgm)
 # plot(Sph_vgm$vgm, Sph_vgm$fitted_vgm)
