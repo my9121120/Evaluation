@@ -9,11 +9,9 @@ rm(list = ls())
 source("multicrossvalidation.R")
 load("DQData")
 properties = names(DQpropertyall)
-plot(DQpropertyall$X, DQpropertyall$Y)
-plot(DQpropertyall$OM.g.kg.1., DQpropertyall$pH)
+
 
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
-DQFurther = DQpropertyall[DQpropertyall$X > 517600,]
 
 DQCluster[, "lnOM"] = log(DQCluster$OM.g.kg.1.)
 crs <- CRS("+proj=tmerc +lat_0=0 +lon_0=120
@@ -39,8 +37,6 @@ Sph_vgm_lnOM <- generate_vgm(target, DQCluster, "Sph", crs, loc, 0.5)
 Exp_vgm_lnOM <- generate_vgm(target, DQCluster, "Exp", crs, loc, 0.5)
 
 par(mfrow = c(3,1))
-
-
 
 plot(gamma~dist, Cir_vgm$vgm,ylim = c(0, 1.05*max(Cir_vgm$vgm$gamma)),col="blue", 
      ylab = 'semivariance', xlab= 'distance(m)', main = "(a)",font.main = 1)
