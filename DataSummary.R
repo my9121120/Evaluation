@@ -12,6 +12,7 @@ library(lattice)
 #a = read.csv("DQpropertyall.csv", numerals = "no.loss")
 #source("multicrossvalidation.R")
 load("DQData")
+#add in 2017
 DQCluster = DQpropertyall[DQpropertyall$X < 517600,]
 DQCluster[, "lnOM"] = log(DQCluster$OM.g.kg.1.)
 statistics <- summary(DQCluster[, c("pH", "OM.g.kg.1.", "lnOM")])
